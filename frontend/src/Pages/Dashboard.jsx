@@ -4,7 +4,7 @@ import { FaBrain, FaClock } from "react-icons/fa";
 import { IoDocument } from "react-icons/io5";
 import ConfirmModal from "../components/ConfirmModal.jsx";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api`;
 
 const HomeIcon = ({ className = "w-5 h-5" }) => (
   <svg
