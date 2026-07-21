@@ -14,7 +14,32 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://epilog.site",
+  "https://www.epilog.site",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".epilog.site") ||
+        origin.endsWith(".pages.dev");
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.get("/health", (req, res) => {
@@ -46,10 +71,7 @@ app.use(errorHandler);
 // Database connectivity check
 const checkDatabaseConnection = async () => {
   try {
-    const { error } = await supabase
-      .from("workspaces")
-      .select("id")
-      .limit(1);
+    const { error } = await supabase.from("workspaces").select("id").limit(1);
 
     if (error) {
       console.error(`[Database] Supabase connection error: ${error.message}`);
